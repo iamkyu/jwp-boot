@@ -50,7 +50,7 @@ public class UserControllerTest extends AbstractAcceptanceTest {
     }
 
     @Test
-    public void updTeForm() {
+    public void updateForm() {
         //given when
         ResponseEntity<String> response = template
                 .getForEntity(String.format("/users/%d/form", testUser.getId()), String.class);
@@ -58,6 +58,24 @@ public class UserControllerTest extends AbstractAcceptanceTest {
         //then
         assertThat(response.getStatusCode(), is(HttpStatus.OK));
         assertThat(response.getBody().contains(testUser.getEmail()), is(true));
+    }
+
+    @Test
+    public void update() {
+        //given
+        MultiValueMap<String, Object> params = new LinkedMultiValueMap<>();
+        params.add("_method", "put");
+        params.add("password", "pass2");
+        params.add("name", "name2");
+        params.add("email", "a@b.d");
+
+        HttpEntity<MultiValueMap<String, Object>> request = new HttpEntity<>(params, getFormHttpHeaders());
+
+        //when
+        ResponseEntity<String> response = template.postForEntity("/users", request, String.class);
+
+        //then
+        assertThat(response.getStatusCode(), is(HttpStatus.FOUND));
     }
 
     @Test
