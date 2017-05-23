@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
 
@@ -19,12 +20,14 @@ import java.util.List;
  * @since 2017-05-18
  */
 @Controller
+@RequestMapping("/users")
 public class UserController {
     private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
-    @Autowired UserRepository userRepository;
+    @Autowired
+    UserRepository userRepository;
 
-    @GetMapping("/users")
+    @GetMapping("")
     public String list(Model model) {
         List<User> users = userRepository.findAll();
         model.addAttribute("users", users);
@@ -32,15 +35,7 @@ public class UserController {
         return "/user/list";
     }
 
-    @PutMapping("/users")
-    public String update(User user) {
-        logger.debug("User: {}", user);
-        userRepository.save(user);
-
-        return "redirect:/";
-    }
-
-    @PostMapping("/users")
+    @PostMapping("")
     public String create(User user) {
         logger.debug("User: {}", user);
         userRepository.save(user);
@@ -48,7 +43,15 @@ public class UserController {
         return "redirect:/";
     }
 
-    @GetMapping("/users/{id}/form")
+    @PutMapping("/{id}")
+    public String update(@PathVariable long id, User user) {
+        User anUser = userRepository.findOne(id);
+        anUser.update(user);
+
+        return "redirect:/users";
+    }
+
+    @GetMapping("/{id}/form")
     public String updateForm(@PathVariable long id, Model model) {
         User user = userRepository.findOne(id);
         model.addAttribute("user", user);

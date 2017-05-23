@@ -1,8 +1,9 @@
-package io.iamkyu.web;
+package io.iamkyu.controller;
 
 import io.iamkyu.infrastructure.UserRepository;
 import io.iamkyu.model.User;
 import io.iamkyu.support.AbstractAcceptanceTest;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -35,6 +36,11 @@ public class UserControllerTest extends AbstractAcceptanceTest {
     @Before
     public void setUp() {
         testUser = userRepository.save(new User("iamkyu", "pass", "name", "a@b.c"));
+    }
+
+    @After
+    public void tearDown() {
+        userRepository.deleteAll();
     }
 
     @Test
@@ -72,10 +78,12 @@ public class UserControllerTest extends AbstractAcceptanceTest {
         HttpEntity<MultiValueMap<String, Object>> request = new HttpEntity<>(params, getFormHttpHeaders());
 
         //when
-        ResponseEntity<String> response = template.postForEntity("/users", request, String.class);
+        ResponseEntity<String> response = template
+                .postForEntity(String.format("/users/%d", testUser.getId()), request, String.class);
 
         //then
         assertThat(response.getStatusCode(), is(HttpStatus.FOUND));
+        assertThat(response.getHeaders().getLocation().getPath(), is("/users"));
     }
 
     @Test

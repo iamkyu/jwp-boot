@@ -1,4 +1,4 @@
-package io.iamkyu.web;
+package io.iamkyu.controller;
 
 import io.iamkyu.support.AbstractAcceptanceTest;
 import org.junit.Test;
