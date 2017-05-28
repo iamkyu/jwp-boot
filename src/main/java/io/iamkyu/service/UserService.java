@@ -1,30 +1,27 @@
 package io.iamkyu.service;
 
-import io.iamkyu.infrastructure.UserRepository;
-import io.iamkyu.model.User;
+import io.iamkyu.UnAuthenticationException;
+import io.iamkyu.domain.User;
+import io.iamkyu.domain.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
-/**
- * @author Kj Nam
- * @since 2017-05-23
- */
 @Service
 public class UserService {
+    @Autowired
+    private UserRepository userRepository;
 
-    @Autowired UserRepository userRepository;
-
-    public User login(String userId, String password) {
+    public User login(String userId, String password) throws UnAuthenticationException {
         Optional<User> maybeUser = userRepository.findByUserId(userId);
         if (!maybeUser.isPresent()) {
-            throw new IllegalStateException();
+            throw new UnAuthenticationException();
         }
 
         User user = maybeUser.get();
         if (!user.matchPassword(password)) {
-            throw new IllegalStateException();
+            throw new UnAuthenticationException();
         }
 
         return user;
